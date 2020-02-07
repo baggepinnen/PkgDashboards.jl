@@ -10,6 +10,7 @@ The only exported function is `dashboard(target_users, [output]; autoopen=true)`
 - `target_users`: a string or a vector of strings with github usernames or org names
 - `output`: `:markdown` or `:html`
 - `autoopen`: indicate whether or not the result is opened in editor or browser
+- `stargazers`: include a plot with github stars over time
 
 ## Usage:
 ```julia
