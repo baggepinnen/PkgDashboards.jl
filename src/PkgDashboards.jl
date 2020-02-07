@@ -21,7 +21,7 @@ end
 
 
 """
-    dashboard(target_users, output=:markdown, autoopen=true)
+    dashboard(target_users, output=:markdown; autoopen=true, stargazers=false)
 
 Create a dashboard with all your badges!
 
@@ -29,8 +29,9 @@ Create a dashboard with all your badges!
 - `target_users`: a string or a vector of strings with github usernames or org names
 - `output`: `:markdown` or `:html`
 - `autoopen`: indicate whether or not the result is opened in editor or browser
+- `stargazers`: include a plot with github stars over time
 """
-function dashboard(target_users, output=:markdown, autoopen=true)
+function dashboard(target_users, output=:markdown; autoopen=true, stargazers=false)
     target_users isa String && (target_users = [target_users])
 
     reg = Pkg.Types.collect_registries()[1]
@@ -45,20 +46,27 @@ function dashboard(target_users, output=:markdown, autoopen=true)
         users = getuser(ctx, Uuid)
         for (user,url) in users
             if user ∈ target_users
-                push!(markdownpage, ["[$(user)/$(name)]($(url))",
+                entry = ["[$(user)/$(name)]($(url))",
                 "[![Build Status](https://travis-ci.org/$(user)/$(name).jl.svg?branch=master)](https://travis-ci.org/$(user)/$(name).jl)",
                 "[![PkgEval](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/$(first(name))/$(name).svg)](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/report.html)",
-                "[![codecov](https://codecov.io/gh/$(user)/$(name).jl/branch/master/graph/badge.svg)](https://codecov.io/gh/$(user)/$(name).jl)"])
+                "[![codecov](https://codecov.io/gh/$(user)/$(name).jl/branch/master/graph/badge.svg)](https://codecov.io/gh/$(user)/$(name).jl)"]
+                if stargazers
+                    push!(entry, "[![Stargazers over time](https://starchart.cc/$(user)/$(name).jl.svg)](https://starchart.cc/$(user)/$(name).jl)")
+                end
+
+                push!(markdownpage, entry)
             end
         end
     end
 
     markdowntable = copy(permutedims(reduce(hcat, markdownpage), (2,1)))
 
+    header = ["URL", "Build status", "PkgEval", "CodeCov"]
+    stargazers && push!(header, "stargazers")
     path = mktempdir()
     markdownpath = joinpath(path, "dashboard.md")
     open(markdownpath, "w") do io
-        pretty_table(io, markdowntable, ["URL", "Build status", "PkgEval", "CodeCov"], backend=:text, tf=markdown)
+        pretty_table(io, markdowntable, header, backend=:text, tf=markdown)
     end
 
     if output == :html
