@@ -5,7 +5,7 @@
 
 Create a dashboard with all your badges!
 
-The only exported function is `dashboard(target_users, [output]; autoopen=true)`:
+The only exported function is `dashboard(target_users, [output]; autoopen=true, stargazers=false)`:
 ### Arguments:
 - `target_users`: a string or a vector of strings with github usernames or org names
 - `output`: `:markdown` or `:html`
