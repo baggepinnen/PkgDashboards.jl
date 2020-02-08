@@ -134,7 +134,11 @@ function create_entry(user, name, url; output = :markdown, autoopen=true, starga
 end
 
 function write_output(markdownpage; kwargs...)
-    markdowntable = copy(permutedims(reduce(hcat, markdownpage), (2,1)))
+    if length(markdownpage) == 1
+        markdowntable = copy(reshape(markdownpage[1], 1, :))
+    else
+        markdowntable = copy(permutedims(reduce(hcat, markdownpage), (2,1)))
+    end
     I = sortperm(markdowntable[:,1])
     markdowntable = markdowntable[I,:]
     header = ["URL", "Build status", "PkgEval", "CodeCov"]
