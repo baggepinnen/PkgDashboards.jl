@@ -126,7 +126,8 @@ end
 
 function write_output(markdownpage; kwargs...)
     markdowntable = copy(permutedims(reduce(hcat, markdownpage), (2,1)))
-
+    I = sortperm(markdowntable[:,1])
+    markdowntable = markdowntable[I,:]
     header = ["URL", "Build status", "PkgEval", "CodeCov"]
     get(kwargs, :stargazers, false) && push!(header, "stargazers")
     get(kwargs, :githubci, false) && push!(header, "Github CI")
