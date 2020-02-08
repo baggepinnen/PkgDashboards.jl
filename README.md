@@ -18,10 +18,11 @@ The exported functions are
 - `githubci`: Also add a Badge for github CI
 
 ## Usage:
+The following are some things you can do
 ```julia
 dashboard("github_username")
 dashboard(["username1", "username2"])
-dashboard("github_username", output=:html, autoopen=true)
+dashboard("github_username", output=:html, stargazers=true, autoopen=true)
 pkgdashboard(["PackageName1","PackageName2"])
 ```
 
