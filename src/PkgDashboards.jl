@@ -2,7 +2,7 @@ module PkgDashboards
 
 using Pkg, PrettyTables, Weave, InteractiveUtils
 
-export dashboard
+export dashboard, pkgdashboard, uberdashboard
 
 function getuser(ctx, uuid::Pkg.Types.UUID)
     urls = String[]
@@ -74,6 +74,30 @@ function pkgdashboard(packages; kwargs...)
     for (uuid, pkginfo) in data["packages"]
         name = pkginfo["name"]
         name ∈ packages || continue
+        spec = PackageSpec(uuid=uuid)
+        Uuid = Pkg.Types.UUID(uuid)
+        users = getuser(ctx, Uuid)
+        for (user,url) in users
+            entry = create_entry(user, name, url; kwargs...)
+            push!(markdownpage, entry)
+        end
+    end
+    write_output(markdownpage; kwargs...)
+end
+
+"""
+    uberdashboard(; kwargs...)
+
+Same as [`dashboard`](@ref) but generates a dashboard for all registered Julia packages.
+"""
+function uberdashboard(; kwargs...)
+    reg = Pkg.Types.collect_registries()[1]
+    data = Pkg.Types.read_registry(joinpath(reg.path, "Registry.toml"))
+    ctx = Pkg.Types.Context()
+
+    markdownpage = []
+    for (uuid, pkginfo) in data["packages"]
+        name = pkginfo["name"]
         spec = PackageSpec(uuid=uuid)
         Uuid = Pkg.Types.UUID(uuid)
         users = getuser(ctx, Uuid)
