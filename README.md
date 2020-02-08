@@ -5,12 +5,14 @@
 
 Create a dashboard with all your badges!
 
-The only exported function is `dashboard(target_users, [output]; autoopen=true, stargazers=false)`:
+The only exported function is `dashboard(target_users, output=:markdown; autoopen=true, stargazers=false, githubci=false)`
+
 ### Arguments:
 - `target_users`: a string or a vector of strings with github usernames or org names
 - `output`: `:markdown` or `:html`
 - `autoopen`: indicate whether or not the result is opened in editor or browser
 - `stargazers`: include a plot with github stars over time
+- `githubci`: Also add a Badge for github CI
 
 ## Usage:
 ```julia

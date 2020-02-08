@@ -21,17 +21,18 @@ end
 
 
 """
-    dashboard(target_users, output=:markdown; autoopen=true, stargazers=false)
+    dashboard(target_users, output=:markdown; autoopen=true, stargazers=false, githubci=false)
 
 Create a dashboard with all your badges!
 
-#Arguments:
+### Arguments:
 - `target_users`: a string or a vector of strings with github usernames or org names
 - `output`: `:markdown` or `:html`
 - `autoopen`: indicate whether or not the result is opened in editor or browser
 - `stargazers`: include a plot with github stars over time
+- `githubci`: Also add a Badge for github CI
 """
-function dashboard(target_users, output=:markdown; autoopen=true, stargazers=false)
+function dashboard(target_users, output=:markdown; autoopen=true, stargazers=false, githubci=false)
     target_users isa String && (target_users = [target_users])
 
     reg = Pkg.Types.collect_registries()[1]
@@ -53,6 +54,9 @@ function dashboard(target_users, output=:markdown; autoopen=true, stargazers=fal
                 if stargazers
                     push!(entry, "[![Stargazers over time](https://starchart.cc/$(user)/$(name).jl.svg)](https://starchart.cc/$(user)/$(name).jl)")
                 end
+                if githubci
+                    push!(entry, "[![Build Status](https://github.com/$(user)/$(name).jl/workflows/CI/badge.svg)](https://github.com/$(user)/$(name).jl/actions)")
+                end
 
                 push!(markdownpage, entry)
             end
@@ -63,6 +67,7 @@ function dashboard(target_users, output=:markdown; autoopen=true, stargazers=fal
 
     header = ["URL", "Build status", "PkgEval", "CodeCov"]
     stargazers && push!(header, "stargazers")
+    githubci && push!(header, "Github CI")
     path = mktempdir()
     markdownpath = joinpath(path, "dashboard.md")
     open(markdownpath, "w") do io
