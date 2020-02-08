@@ -24,7 +24,7 @@ The following are some things you can do
 ```julia
 dashboard("github_username")
 dashboard(["username1", "username2"])
-dashboard("github_username", output=:html, stargazers=true, stars=false, autoopen=true)
+dashboard("github_username", output=:html, stargazers=true, stars=false, autoopen=true, activity=true)
 pkgdashboard(["PackageName1","PackageName2"])
 ```
 
