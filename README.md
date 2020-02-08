@@ -5,7 +5,9 @@
 
 Create a dashboard with all your badges!
 
-The only exported function is `dashboard(target_users, output=:markdown; autoopen=true, stargazers=false, githubci=false)`
+The exported functions are
+- `dashboard(target_users; output=:markdown, autoopen=true, stargazers=false, githubci=false)`
+- `pkgdashboard(packagenames; kwargs...)`
 
 ### Arguments:
 - `target_users`: a string or a vector of strings with github usernames or org names
@@ -18,7 +20,8 @@ The only exported function is `dashboard(target_users, output=:markdown; autoope
 ```julia
 dashboard("github_username")
 dashboard(["username1", "username2"])
-dashboard("github_username", :html, autoopen=true)
+dashboard("github_username", output=:html, autoopen=true)
+pkgdashboard(["PackageName1","PackageName2"])
 ```
 
 ## Result
