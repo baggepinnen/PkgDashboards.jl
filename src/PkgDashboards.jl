@@ -21,7 +21,7 @@ end
 
 
 """
-dashboard(target_users; output=:markdown, autoopen=true, stargazers=false, githubci=false, stars=true)
+dashboard(target_users; output=:markdown, autoopen=true, stargazers=false, githubci=false, stars=true, activity=false)
 
 Create a dashboard with all your badges!
 
@@ -29,9 +29,10 @@ Create a dashboard with all your badges!
 - `target_users`: a string or a vector of strings with github usernames or org names
 - `output`: `:markdown` or `:html`
 - `autoopen`: indicate whether or not the result is opened in editor or browser
+- `githubci`: Also add a Badge for github CI
+- `activity`: display number of commit per month
 - `stars`: Add github star badge
 - `stargazers`: include a plot with github stars over time
-- `githubci`: Also add a Badge for github CI
 
 See also [`pkgdashboard`](@ref)
 """
@@ -110,7 +111,7 @@ function uberdashboard(; kwargs...)
     write_output(markdownpage; kwargs...)
 end
 
-function create_entry(user, name, url; output = :markdown, autoopen=true, stargazers=false, githubci=false, stars=true)
+function create_entry(user, name, url; output = :markdown, autoopen=true, stargazers=false, githubci=false, stars=true, activity=false)
     entry = ["[$(user)/$(name)]($(url))",
     "[![Build Status](https://travis-ci.org/$(user)/$(name).jl.svg?branch=master)](https://travis-ci.org/$(user)/$(name).jl)",
     "[![PkgEval](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/$(first(name))/$(name).svg)](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/report.html)",
@@ -120,6 +121,9 @@ function create_entry(user, name, url; output = :markdown, autoopen=true, starga
     end
     if githubci
         push!(entry, "[![Build Status](https://github.com/$(user)/$(name).jl/workflows/CI/badge.svg)](https://github.com/$(user)/$(name).jl/actions)")
+    end
+    if activity
+        push!(entry, "[![activity](https://img.shields.io/github/commit-activity/m/$(user)/$(name).jl)](https://github.com/$(user)/$(name).jl/pulse)")
     end
     if stargazers
         push!(entry, "[![Stargazers over time](https://starchart.cc/$(user)/$(name).jl.svg)](https://starchart.cc/$(user)/$(name).jl)")
@@ -136,6 +140,7 @@ function write_output(markdownpage; kwargs...)
     header = ["URL", "Build status", "PkgEval", "CodeCov"]
     get(kwargs, :stars, true) && push!(header, "Github stars")
     get(kwargs, :githubci, false) && push!(header, "Github CI")
+    get(kwargs, :activity, false) && push!(header, "Commit activity")
     get(kwargs, :stargazers, false) && push!(header, "stargazers")
     path = mktempdir()
     markdownpath = joinpath(path, "dashboard.md")

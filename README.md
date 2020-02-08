@@ -6,7 +6,7 @@
 Create a dashboard with all your badges!
 
 The exported functions are
-- `dashboard(target_users; output=:markdown, autoopen=true, stargazers=false, githubci=false, stars=true)`
+- `dashboard(target_users; output=:markdown, autoopen=true, stargazers=false, githubci=false, stars=true, activity=false)`
 - `pkgdashboard(packagenames; kwargs...)`
 - `uberdashboard(; kwargs...)` Generate dashboard for the entire General registry.
 
@@ -15,6 +15,7 @@ The exported functions are
 - `output`: `:markdown` or `:html`
 - `autoopen`: indicate whether or not the result is opened in editor or browser
 - `githubci`: Also add a Badge for github CI
+- `activity`: display number of commit per month
 - `stars`: Add github stars badge
 - `stargazers`: include a plot with github stars over time
 
