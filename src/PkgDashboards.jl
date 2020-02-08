@@ -30,7 +30,7 @@ Create a dashboard with all your badges!
 - `output`: `:markdown` or `:html`
 - `autoopen`: indicate whether or not the result is opened in editor or browser
 - `githubci`: Also add a Badge for github CI
-- `activity`: display number of commit per month
+- `activity`: display number of commits per month
 - `stars`: Add github star badge
 - `stargazers`: include a plot with github stars over time
 
