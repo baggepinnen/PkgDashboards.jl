@@ -125,7 +125,7 @@ function create_entry(user, name, url; output = :markdown, autoopen=true, starga
 end
 
 function write_output(markdownpage; kwargs...)
-    @show markdowntable = copy(permutedims(reduce(hcat, markdownpage), (2,1)))
+    markdowntable = copy(permutedims(reduce(hcat, markdownpage), (2,1)))
 
     header = ["URL", "Build status", "PkgEval", "CodeCov"]
     get(kwargs, :stargazers, false) && push!(header, "stargazers")
