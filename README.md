@@ -1,7 +1,7 @@
 # PkgDashboards
 
-<!-- [![Build Status](https://travis-ci.com/baggepinnen/PkgDashboards.jl.svg?branch=master)](https://travis-ci.com/baggepinnen/PkgDashboards.jl) -->
-<!-- [![Codecov](https://codecov.io/gh/baggepinnen/PkgDashboards.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/baggepinnen/PkgDashboards.jl) -->
+[![Build Status](https://travis-ci.com/baggepinnen/PkgDashboards.jl.svg?branch=master)](https://travis-ci.com/baggepinnen/PkgDashboards.jl)
+[![Codecov](https://codecov.io/gh/baggepinnen/PkgDashboards.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/baggepinnen/PkgDashboards.jl)
 
 Create a dashboard with all your badges!
 
@@ -26,6 +26,13 @@ dashboard("github_username")
 dashboard(["username1", "username2"])
 dashboard("github_username", output=:html, stargazers=true, stars=false, autoopen=true, activity=true)
 pkgdashboard(["PackageName1","PackageName2"])
+```
+
+## Show methods
+The return type `DashBoard` can be displayed as text, markdown or html. Example:
+```
+using ElectronDisplay
+electrondisplay(dashboard("JuliaComputing"))
 ```
 
 ## Result

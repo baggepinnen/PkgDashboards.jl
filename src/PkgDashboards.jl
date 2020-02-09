@@ -1,8 +1,30 @@
 module PkgDashboards
 
-using Pkg, PrettyTables, Weave, InteractiveUtils
+using Pkg, PrettyTables, Weave, InteractiveUtils, Markdown
 
 export dashboard, pkgdashboard, uberdashboard
+
+
+struct DashBoard
+    markdowntable
+    header
+end
+
+function Base.show(io::IO, ::MIME"text/plain", db::DashBoard)
+    pretty_table(io, db.markdowntable, db.header, backend=:text)
+end
+
+function Base.show(io::IO, ::MIME"text/markdown", db::DashBoard)
+    pretty_table(io, db.markdowntable, db.header, backend=:text, tf=markdown)
+end
+
+function Base.show(io::IO, m::MIME"text/html", db::DashBoard)
+    io2 = IOBuffer()
+    Base.show(io2, MIME"text/markdown"(), db)
+    md = String(take!(io2))
+    MD = Markdown.parse(md)
+    write(io, html(MD))
+end
 
 function getuser(ctx, uuid::Pkg.Types.UUID)
     urls = String[]
@@ -56,7 +78,9 @@ function dashboard(target_users; kwargs...)
             end
         end
     end
-    write_output(markdownpage; kwargs...)
+    tab = table(markdownpage; kwargs...)
+    write_output(tab; kwargs...)
+    tab
 end
 
 
@@ -84,7 +108,9 @@ function pkgdashboard(packages; kwargs...)
             push!(markdownpage, entry)
         end
     end
-    write_output(markdownpage; kwargs...)
+    tab = table(markdownpage)
+    write_output(tab; kwargs...)
+    tab
 end
 
 """
@@ -108,7 +134,9 @@ function uberdashboard(; kwargs...)
             push!(markdownpage, entry)
         end
     end
-    write_output(markdownpage; kwargs...)
+    tab = table(markdownpage)
+    write_output(tab; kwargs...)
+    tab
 end
 
 function create_entry(user, name, url; output = :markdown, autoopen=true, stargazers=false, githubci=false, stars=true, activity=false)
@@ -133,7 +161,7 @@ function create_entry(user, name, url; output = :markdown, autoopen=true, starga
     entry
 end
 
-function write_output(markdownpage; kwargs...)
+function table(markdownpage; kwargs...)
     if length(markdownpage) == 1
         markdowntable = copy(reshape(markdownpage[1], 1, :))
     else
@@ -146,10 +174,16 @@ function write_output(markdownpage; kwargs...)
     get(kwargs, :githubci, false) && push!(header, "Github CI")
     get(kwargs, :activity, false) && push!(header, "Commit activity")
     get(kwargs, :stargazers, false) && push!(header, "stargazers")
+    DashBoard(markdowntable, header)
+end
+
+
+function write_output(db::DashBoard; kwargs...)
+
     path = mktempdir()
     markdownpath = joinpath(path, "dashboard.md")
     open(markdownpath, "w") do io
-        pretty_table(io, markdowntable, header, backend=:text, tf=markdown)
+        pretty_table(io, db.markdowntable, db.header, backend=:text, tf=markdown)
     end
 
     if get(kwargs, :output, :markdown) == :html
@@ -162,7 +196,6 @@ function write_output(markdownpage; kwargs...)
         @info "Wrote markdown to $markdownpath"
         get(kwargs, :autoopen, true) && edit(markdownpath)
     end
-    markdowntable
 end
 
 end # module
