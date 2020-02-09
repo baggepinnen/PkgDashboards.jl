@@ -6,7 +6,7 @@
 Create a dashboard with all your badges!
 
 The exported functions are
-- `dashboard(target_users; output=:markdown, autoopen=true, stargazers=false, githubci=false, stars=true, activity=false)`
+- `dashboard(target_users; output=:markdown, autoopen=false, stargazers=false, githubci=false, stars=true, activity=false)`
 - `pkgdashboard(packagenames; kwargs...)`
 - `uberdashboard(; kwargs...)` Generate dashboard for the entire General registry.
 
@@ -24,13 +24,13 @@ The following are some things you can do
 ```julia
 dashboard("github_username")
 dashboard(["username1", "username2"])
-dashboard("github_username", output=:html, stargazers=true, stars=false, autoopen=true, activity=true)
+dashboard("github_username", output=:html, stargazers=true, stars=false, autoopen=false, activity=true)
 pkgdashboard(["PackageName1","PackageName2"])
 ```
 
 ## Show methods
 The return type `DashBoard` can be displayed as text, markdown or html. Example:
-```
+```julia
 using ElectronDisplay
 electrondisplay(dashboard("JuliaComputing"))
 ```

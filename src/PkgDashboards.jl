@@ -10,21 +10,30 @@ struct DashBoard
     header
 end
 
+function markdownstring(db)
+    io = IOBuffer()
+    pretty_table(io, db.markdowntable, db.header, backend=:text, tf=markdown)
+    md = String(take!(io))
+end
+
+
 function Base.show(io::IO, ::MIME"text/plain", db::DashBoard)
     pretty_table(io, db.markdowntable, db.header, backend=:text)
 end
 
-function Base.show(io::IO, ::MIME"text/markdown", db::DashBoard)
-    pretty_table(io, db.markdowntable, db.header, backend=:text, tf=markdown)
+function Base.show(io::IO, m::MIME"text/markdown", db::DashBoard)
+    md = markdownstring(db)
+    MD = Markdown.parse(md)
+    show(io,m,MD)
 end
 
 function Base.show(io::IO, m::MIME"text/html", db::DashBoard)
-    io2 = IOBuffer()
-    Base.show(io2, MIME"text/markdown"(), db)
-    md = String(take!(io2))
+    md = markdownstring(db)
     MD = Markdown.parse(md)
     write(io, html(MD))
 end
+
+Base.show(io::IO, m::MIME"ijulia/inline", db::DashBoard) = show(io,MIME"text/html"(), db)
 
 function getuser(ctx, uuid::Pkg.Types.UUID)
     urls = String[]
@@ -43,7 +52,7 @@ end
 
 
 """
-dashboard(target_users; output=:markdown, autoopen=true, stargazers=false, githubci=false, stars=true, activity=false)
+dashboard(target_users; output=:markdown, autoopen=false, stargazers=false, githubci=false, stars=true, activity=false)
 
 Create a dashboard with all your badges!
 
@@ -139,7 +148,7 @@ function uberdashboard(; kwargs...)
     tab
 end
 
-function create_entry(user, name, url; output = :markdown, autoopen=true, stargazers=false, githubci=false, stars=true, activity=false)
+function create_entry(user, name, url; output = :markdown, autoopen=false, stargazers=false, githubci=false, stars=true, activity=false)
     entry = ["[$(user)/$(name)]($(url))",
     "[![Build Status](https://travis-ci.org/$(user)/$(name).jl.svg?branch=master)](https://travis-ci.org/$(user)/$(name).jl)",
     "[![PkgEval](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/$(first(name))/$(name).svg)](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/report.html)",
@@ -188,13 +197,13 @@ function write_output(db::DashBoard; kwargs...)
 
     if get(kwargs, :output, :markdown) == :html
         htmlpath = weave(markdownpath, doctype = "md2html")
-        if get(kwargs, :autoopen, true)
+        if get(kwargs, :autoopen, false)
             @async edit(htmlpath)
             @async run(`sensible-browser $htmlpath`)
         end
     else
         @info "Wrote markdown to $markdownpath"
-        get(kwargs, :autoopen, true) && edit(markdownpath)
+        get(kwargs, :autoopen, false) && edit(markdownpath)
     end
 end
 
