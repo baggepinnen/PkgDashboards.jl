@@ -2,7 +2,7 @@ module PkgDashboards
 
 using Pkg, PrettyTables, Weave, InteractiveUtils, Markdown
 
-export dashboard, pkgdashboard, uberdashboard
+export dashboard, pkgdashboard
 
 
 struct DashBoard
@@ -33,7 +33,6 @@ function Base.show(io::IO, m::MIME"text/html", db::DashBoard)
     write(io, html(MD))
 end
 
-Base.show(io::IO, m::MIME"ijulia/inline", db::DashBoard) = show(io,MIME"text/html"(), db)
 
 function getuser(ctx, uuid::Pkg.Types.UUID)
     urls = String[]
@@ -122,31 +121,6 @@ function pkgdashboard(packages; kwargs...)
     tab
 end
 
-"""
-    uberdashboard(; kwargs...)
-
-Same as [`dashboard`](@ref) but generates a dashboard for all registered Julia packages.
-"""
-function uberdashboard(; kwargs...)
-    reg = Pkg.Types.collect_registries()[1]
-    data = Pkg.Types.read_registry(joinpath(reg.path, "Registry.toml"))
-    ctx = Pkg.Types.Context()
-
-    markdownpage = []
-    for (uuid, pkginfo) in data["packages"]
-        name = pkginfo["name"]
-        spec = PackageSpec(uuid=uuid)
-        Uuid = Pkg.Types.UUID(uuid)
-        users = getuser(ctx, Uuid)
-        for (user,url) in users
-            entry = create_entry(user, name, url; kwargs...)
-            push!(markdownpage, entry)
-        end
-    end
-    tab = table(markdownpage)
-    write_output(tab; kwargs...)
-    tab
-end
 
 function create_entry(user, name, url; output = :markdown, autoopen=false, stargazers=false, githubci=false, stars=true, activity=false)
     entry = ["[$(user)/$(name)]($(url))",

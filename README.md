@@ -8,7 +8,6 @@ Create a dashboard with all your badges!
 The exported functions are
 - `dashboard(target_users; output=:markdown, autoopen=false, stargazers=false, githubci=false, stars=true, activity=false)`
 - `pkgdashboard(packagenames; kwargs...)`
-- `uberdashboard(; kwargs...)` Generate dashboard for the entire General registry.
 
 ### Arguments:
 - `target_users`: a string or a vector of strings with github usernames or org names
