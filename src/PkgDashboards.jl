@@ -125,7 +125,7 @@ end
 function create_entry(user, name, url; output = :markdown, autoopen=false, stargazers=false, githubci=false, stars=true, activity=false)
     entry = ["[$(user)/$(name)]($(url))",
     "[![Build Status](https://travis-ci.org/$(user)/$(name).jl.svg?branch=master)](https://travis-ci.org/$(user)/$(name).jl)",
-    "[![PkgEval](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/$(first(name))/$(name).svg)](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/report.html)",
+    "[![PkgEval](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/$(first(name))/$(name).svg)](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/$(first(name))/$(name).html)",
     "[![codecov](https://codecov.io/gh/$(user)/$(name).jl/branch/master/graph/badge.svg)](https://codecov.io/gh/$(user)/$(name).jl)"]
     if stars
         push!(entry, "[![Stars](https://img.shields.io/github/stars/$(user)/$(name).jl.svg)](https://github.com/$(user)/$(name).jl/stargazers)")
