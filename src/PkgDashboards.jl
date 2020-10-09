@@ -36,7 +36,7 @@ end
 
 function getuser(ctx, uuid::Pkg.Types.UUID)
     urls = String[]
-    for path = Pkg.Types.registered_paths(ctx.env, uuid)
+    for path = Pkg.Types.registered_paths(ctx, uuid)
         info = Pkg.Types.parse_toml(path, "Package.toml")
         repo = info["repo"]
         repo in urls || push!(urls, repo)
