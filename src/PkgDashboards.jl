@@ -166,7 +166,7 @@ function write_output(db::DashBoard; kwargs...)
     path = mktempdir()
     markdownpath = joinpath(path, "dashboard.md")
     open(markdownpath, "w") do io
-        pretty_table(io, db.markdowntable, db.header, backend=:text, tf=markdown)
+        pretty_table(io, db.markdowntable, db.header, backend=:text, tf=tf_markdown)
     end
 
     if get(kwargs, :output, :markdown) == :html
