@@ -37,7 +37,7 @@ end
 function getuser(ctx, uuid::Pkg.Types.UUID)
     urls = String[]
     for path = Pkg.Types.registered_paths(ctx, uuid)
-        info = Pkg.Types.parse_toml(path, "Package.toml")
+        info = Pkg.Types.parse_toml(joinpath(path, "Package.toml"))#, "Package.toml")
         repo = info["repo"]
         repo in urls || push!(urls, repo)
     end
@@ -51,7 +51,7 @@ end
 
 
 """
-dashboard(target_users; output=:markdown, autoopen=false, stargazers=false, githubci=false, stars=true, activity=false)
+dashboard(target_users; output=:markdown, autoopen=false, stargazers=false, travisci=false, stars=true, activity=false)
 
 Create a dashboard with all your badges!
 
@@ -59,7 +59,7 @@ Create a dashboard with all your badges!
 - `target_users`: a string or a vector of strings with github usernames or org names
 - `output`: `:markdown` or `:html`
 - `autoopen`: indicate whether or not the result is opened in editor or browser
-- `githubci`: Also add a Badge for github CI
+- `travisci`: Add a Badge for github CI
 - `activity`: display number of commits per month
 - `stars`: Add github star badge
 - `stargazers`: include a plot with github stars over time
@@ -122,16 +122,16 @@ function pkgdashboard(packages; kwargs...)
 end
 
 
-function create_entry(user, name, url; output = :markdown, autoopen=false, stargazers=false, githubci=false, stars=true, activity=false)
+function create_entry(user, name, url; output = :markdown, autoopen=false, stargazers=false, travisci=false, stars=true, activity=false)
     entry = ["[$(user)/$(name)]($(url))",
-    "[![Build Status](https://travis-ci.org/$(user)/$(name).jl.svg?branch=master)](https://travis-ci.org/$(user)/$(name).jl)",
-    "[![PkgEval](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/$(first(name))/$(name).svg)](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/$(first(name))/$(name).html)",
-    "[![codecov](https://codecov.io/gh/$(user)/$(name).jl/branch/master/graph/badge.svg)](https://codecov.io/gh/$(user)/$(name).jl)"]
+            "[![Build Status](https://github.com/$(user)/$(name).jl/workflows/CI/badge.svg)](https://github.com/$(user)/$(name).jl/actions)",
+            "[![PkgEval](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/$(first(name))/$(name).svg)](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/$(first(name))/$(name).html)",
+            "[![codecov](https://codecov.io/gh/$(user)/$(name).jl/branch/master/graph/badge.svg)](https://codecov.io/gh/$(user)/$(name).jl)"]
     if stars
         push!(entry, "[![Stars](https://img.shields.io/github/stars/$(user)/$(name).jl.svg)](https://github.com/$(user)/$(name).jl/stargazers)")
     end
-    if githubci
-        push!(entry, "[![Build Status](https://github.com/$(user)/$(name).jl/workflows/CI/badge.svg)](https://github.com/$(user)/$(name).jl/actions)")
+    if travisci
+        push!(entry, "[![Build Status](https://travis-ci.org/$(user)/$(name).jl.svg?branch=master)](https://travis-ci.org/$(user)/$(name).jl)")
     end
     if activity
         push!(entry, "[![activity](https://img.shields.io/github/commit-activity/m/$(user)/$(name).jl)](https://github.com/$(user)/$(name).jl/pulse)")
@@ -154,7 +154,7 @@ function table(markdownpage; kwargs...)
     markdowntable = markdowntable[I,:]
     header = ["URL", "Build status", "PkgEval", "CodeCov"]
     get(kwargs, :stars, true) && push!(header, "Github stars")
-    get(kwargs, :githubci, false) && push!(header, "Github CI")
+    get(kwargs, :travisci, false) && push!(header, "Travis CI")
     get(kwargs, :activity, false) && push!(header, "Commit activity")
     get(kwargs, :stargazers, false) && push!(header, "stargazers")
     DashBoard(markdowntable, header)
